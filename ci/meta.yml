@@ -46,6 +46,7 @@ meta:
           args:
             - -exc
             - |
+              export TF_VAR_ecs_hardened_ami_id=$(cat ../dw-al2-ecs-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
@@ -64,6 +65,7 @@ meta:
           args:
             - -exc
             - |
+              export TF_VAR_ecs_hardened_ami_id=$(cat ../dw-al2-ecs-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
