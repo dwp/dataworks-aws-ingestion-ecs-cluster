@@ -75,20 +75,7 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
     ignore_changes        = [desired_capacity]
   }
 
-  dynamic "tag" {
-    for_each = merge(
-      local.common_tags,
-      {
-        Name = local.ingestion_ecs_friendly_name
-      },
-    )
-
-    content {
-      key                 = tag.key
-      value               = tag.value
-      propagate_at_launch = true
-    }
-  }
+  tags = [local.ingestion_ecs_asg_tags]
 }
 
 resource "aws_launch_template" "ingestion_ecs_cluster" {
