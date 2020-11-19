@@ -1,6 +1,7 @@
 jobs:
   - name: dataworks-aws-ingestion-ecs-cluster-pr
     plan:
+      - get: dw-al2-ecs-ami
       - get: dataworks-aws-ingestion-ecs-cluster-pr
         trigger: true
         version: every
