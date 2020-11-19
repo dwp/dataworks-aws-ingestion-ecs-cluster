@@ -1,6 +1,6 @@
 locals {
   ingestion_ecs_friendly_name = "ingestion-ecs-cluster"
-  cluster_name = replace(local.ingestion_ecs_friendly_name, "-ecs-cluster", "")
+  cluster_name                = replace(local.ingestion_ecs_friendly_name, "-ecs-cluster", "")
 
   iam_role_max_session_timeout_seconds = 43200
 
