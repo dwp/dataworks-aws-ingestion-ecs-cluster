@@ -51,18 +51,6 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   health_check_type         = "EC2"
   force_delete              = true
   vpc_zone_identifier       = data.terraform_remote_state.ingestion.outputs.ingestion_subnets.id
-  suspended_processes = [
-    "AZRebalance",
-    "AddToLoadBalancer",
-    "AlarmNotification",
-    "HealthCheck",
-    "InstanceRefresh",
-    "Launch",
-    "RemoveFromLoadBalancerLowPriority",
-    "ReplaceUnhealthy",
-    "ScheduledActions",
-    "Terminate",
-  ]
 
 
   launch_template {
