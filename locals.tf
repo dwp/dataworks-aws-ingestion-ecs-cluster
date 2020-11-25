@@ -33,4 +33,7 @@ locals {
       propagate_at_launch = true,
     }
   )
+
+  ingest_internet_proxy = data.terraform_remote_state.ingestion.outputs.internet_proxy
+
 }
