@@ -319,7 +319,7 @@ resource "aws_security_group_rule" "ingestion_ecs_to_s3_http" {
   security_group_id = aws_security_group.ingestion_ecs_cluster.id
 }
 
-resource "aws_security_group_rule" "egress_k2hb_common_to_internet" {
+resource "aws_security_group_rule" "egress_containers_to_internet" {
   description              = "Allow containers access to Internet Proxy (for ACM-PCA)"
   type                     = "egress"
   source_security_group_id = local.ingest_internet_proxy.sg
@@ -329,7 +329,7 @@ resource "aws_security_group_rule" "egress_k2hb_common_to_internet" {
   security_group_id        = aws_security_group.ingestion_ecs_cluster.id
 }
 
-resource "aws_security_group_rule" "ingress_k2hb_common_to_internet" {
+resource "aws_security_group_rule" "ingress_containers_to_internet" {
   description              = "Allow containers access to Internet Proxy (for ACM-PCA)"
   type                     = "ingress"
   source_security_group_id = aws_security_group.ingestion_ecs_cluster.id
