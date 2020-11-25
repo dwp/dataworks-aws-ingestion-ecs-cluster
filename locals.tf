@@ -30,7 +30,6 @@ locals {
       AutoShutdown        = local.ingestion_ecs_cluster_asg_autoshutdown[local.environment],
       SSMEnabled          = local.ingestion_ecs_cluster_asg_ssmenabled[local.environment],
       Persistence         = "Ignore",
-      propagate_at_launch = true,
     }
   )
 
