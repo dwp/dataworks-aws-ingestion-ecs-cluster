@@ -32,4 +32,5 @@ locals {
       Persistence         = "Ignore",
     }
   )
+
 }

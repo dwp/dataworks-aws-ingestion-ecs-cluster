@@ -26,19 +26,15 @@ git-hooks: ## Set up hooks in .githooks
 	git config core.hooksPath .githooks \
 
 
-.PHONY: terraform-init
 terraform-init: ## Run `terraform init` from repo root
 	terraform init
 
-.PHONY: terraform-plan
 terraform-plan: ## Run `terraform plan` from repo root
 	terraform plan
 
-.PHONY: terraform-apply
 terraform-apply: ## Run `terraform apply` from repo root
 	terraform apply
 
-.PHONY: terraform-workspace-new
 terraform-workspace-new: ## Creates new Terraform workspace with Concourse remote execution. Run `terraform-workspace-new workspace=<workspace_name>`
 	declare -a workspace=( qa integration preprod production ) \
 	make bootstrap ; \
@@ -47,3 +43,18 @@ terraform-workspace-new: ## Creates new Terraform workspace with Concourse remot
 		fly -t aws-concourse execute --config create-workspace.yml --input repo=. -v workspace="$$i" ; \
 	done
 	rm jeff.tf
+
+concourse-login: ## Login to concourse using Fly
+	fly -t aws-concourse login -c https://ci.dataworks.dwp.gov.uk/ -n dataworks
+
+utility-login: ## Login to utility team using Fly
+	fly -t utility login -c https://ci.dataworks.dwp.gov.uk/ -n utility
+
+update-pipeline: ## Update the main pipeline
+	aviator
+
+pause-pipeline: ## Pause the main pipeline
+	fly --target aws-concourse pause-pipeline --pipeline aws-ingest
+
+unpause-pipeline: ## Unpause the main pipeline
+	fly --target aws-concourse unpause-pipeline --pipeline aws-ingest
