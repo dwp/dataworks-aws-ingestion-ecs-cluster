@@ -1,14 +1,4 @@
 locals {
-  management_account = {
-    development = "management-dev"
-    qa          = "management-dev"
-    integration = "management-dev"
-    preprod     = "management"
-    production  = "management"
-  }
-
-  dks_subnet_cidr = data.terraform_remote_state.crypto.outputs.dks_subnet.cidr_blocks
-
   stub_ucfs_subnets            = data.terraform_remote_state.ingestion.outputs.stub_ucfs_subnets
   stub_kafka_broker_port_https = data.terraform_remote_state.ingestion.outputs.locals.stub_kafka_broker_port_https
 
