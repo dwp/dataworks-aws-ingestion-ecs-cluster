@@ -20,6 +20,17 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  version = "~> 3.13.0"
+  region  = "{{terraform.provider_region}}"
+  alias   = "management-crypto"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
+  }
+}
+
+
 locals {
   name        = "dataworks-aws-ingestion-ecs-cluster"
   environment = terraform.workspace == "default" ? "development" : terraform.workspace
@@ -83,6 +94,20 @@ data "terraform_remote_state" "management_artefact" {
   config = {
     bucket         = "{{terraform.state_file_bucket}}"
     key            = "terraform/dataworks/management.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+data "terraform_remote_state" "crypto" {
+  backend   = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/aws-crypto.tfstate"
     region         = "{{terraform.state_file_region}}"
     encrypt        = true
     kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"

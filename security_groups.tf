@@ -3,11 +3,13 @@ locals {
     {
       name : "Ingest ECS Cluster VPC endpoints"
       port : 443
+      protocol : "tcp"
       destination : data.terraform_remote_state.ingestion.outputs.vpc.vpc.interface_vpce_sg_id
     },
     {
       name : "Ingest ECS Cluster internet proxy endpoints (for ACM-PCA)"
       port : 3128
+      protocol : "tcp"
       destination : data.terraform_remote_state.ingestion.outputs.internet_proxy.sg
     },
   ]
@@ -20,10 +22,10 @@ resource "aws_security_group" "ingestion_ecs_cluster" {
   vpc_id                 = data.terraform_remote_state.ingestion.outputs.vpc.vpc.vpc.id
 
   tags = merge(
-  local.common_tags,
-  {
-    Name = local.ingestion_ecs_friendly_name
-  }
+    local.common_tags,
+    {
+      Name = local.ingestion_ecs_friendly_name
+    }
   )
 }
 
@@ -33,7 +35,7 @@ resource "aws_security_group_rule" "ingress" {
   type                     = "ingress"
   from_port                = each.value.port
   to_port                  = each.value.port
-  protocol                 = "tcp"
+  protocol                 = each.value.protocol
   security_group_id        = each.value.destination
   source_security_group_id = aws_security_group.ingestion_ecs_cluster.id
 }
@@ -44,7 +46,7 @@ resource "aws_security_group_rule" "egress" {
   type                     = "egress"
   from_port                = each.value.port
   to_port                  = each.value.port
-  protocol                 = "tcp"
+  protocol                 = each.value.protocol
   source_security_group_id = each.value.destination
   security_group_id        = aws_security_group.ingestion_ecs_cluster.id
 }
