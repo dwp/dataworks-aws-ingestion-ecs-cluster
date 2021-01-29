@@ -90,6 +90,9 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
 
   user_data = base64encode(templatefile("userdata.tpl", {
     cluster_name = local.cluster_name # Referencing the cluster resource causes a circular dependency
+    region       = data.aws_region.current.name
+    name         = local.ingestion_ecs_friendly_name
+
   }))
 
   instance_initiated_shutdown_behavior = "terminate"
@@ -252,6 +255,17 @@ data "aws_iam_policy_document" "ingestion_ecs_cluster" {
       "logs:DescribeLogStreams"
     ]
     resources = [aws_cloudwatch_log_group.ingestion_ecs_cluster.arn]
+  }
+
+  statement {
+    sid    = "EnableEC2TaggingHost"
+    effect = "Allow"
+
+    actions = [
+      "ec2:ModifyInstanceMetadataOptions",
+      "ec2:*Tags",
+    ]
+    resources = ["arn:aws:ec2:${var.region}:${local.account[local.environment]}:instance/*"]
   }
 }
 
