@@ -20,6 +20,8 @@ provider "aws" {
   }
 }
 
+data "aws_region" "current" {}
+
 locals {
   name        = "dataworks-aws-ingestion-ecs-cluster"
   environment = terraform.workspace == "default" ? "development" : terraform.workspace
