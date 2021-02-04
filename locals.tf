@@ -33,4 +33,19 @@ locals {
     }
   )
 
+  ingestion_ecs_cluster_ebs_volume_size = {
+    development = 667
+    qa          = 667
+    integration = 667
+    preprod     = 667
+    production  = 667
+  }
+
+  ingestion_ecs_cluster_ebs_volume_type = {
+    development = "gp3"
+    qa          = "gp3"
+    integration = "gp3"
+    preprod     = "gp3"
+    production  = "gp3"
+  }
 }
