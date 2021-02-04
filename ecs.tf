@@ -24,7 +24,7 @@ resource "aws_ecs_capacity_provider" "ingestion_ecs_cluster" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ingestion_ecs_cluster.arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
@@ -32,6 +32,10 @@ resource "aws_ecs_capacity_provider" "ingestion_ecs_cluster" {
       status                    = "ENABLED"
       target_capacity           = 10
     }
+  }
+
+  lifecycle {
+    ignore_changes = all
   }
 
   tags = merge(
@@ -60,6 +64,13 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 25
+    }
   }
 
   dynamic "tag" {
