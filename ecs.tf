@@ -105,9 +105,8 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size           = 1024
-      volume_type           = "io1"
-      iops                  = "2000"
+      volume_size           = local.ingestion_ecs_cluster_ebs_volume_size[local.environment]
+      volume_type           = local.ingestion_ecs_cluster_ebs_volume_type[local.environment]
       delete_on_termination = true
       encrypted             = true
     }
