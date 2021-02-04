@@ -46,7 +46,6 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   name_prefix               = "${aws_launch_template.ingestion_ecs_cluster.name}-lt_ver${aws_launch_template.ingestion_ecs_cluster.latest_version}_"
   min_size                  = 0
   max_size                  = var.ingestion_ecs_cluster_asg_max[local.environment]
-  protect_from_scale_in     = true
   health_check_grace_period = 600
   health_check_type         = "EC2"
   force_delete              = true
