@@ -147,6 +147,17 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
       }
     )
   }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      local.common_tags,
+      {
+        Name = local.ingestion_ecs_friendly_name,
+      }
+    )
+  }
 }
 
 resource "aws_cloudwatch_log_group" "ingestion_ecs_cluster" {
