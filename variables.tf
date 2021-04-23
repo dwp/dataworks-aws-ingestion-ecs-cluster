@@ -24,7 +24,7 @@ variable "ingestion_ecs_cluster_ec2_size" {
   default = {
     development = "t3.medium"
     qa          = "t3.medium"
-    integration = "t3.medium"
+    integration = "t3.large"
     preprod     = "t3.medium"
     production  = "m5.large"
   }
