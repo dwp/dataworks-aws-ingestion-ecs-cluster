@@ -12,13 +12,15 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 3.12.0"
+  version = "~> 3.25.0"
   region  = "{{terraform.provider_region}}"
 
   assume_role {
     role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
   }
 }
+
+data "aws_region" "current" {}
 
 locals {
   name        = "dataworks-aws-ingestion-ecs-cluster"

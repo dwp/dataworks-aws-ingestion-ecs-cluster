@@ -24,7 +24,7 @@ resource "aws_ecs_capacity_provider" "ingestion_ecs_cluster" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ingestion_ecs_cluster.arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1000
@@ -32,6 +32,10 @@ resource "aws_ecs_capacity_provider" "ingestion_ecs_cluster" {
       status                    = "ENABLED"
       target_capacity           = 10
     }
+  }
+
+  lifecycle {
+    ignore_changes = all
   }
 
   tags = merge(
@@ -46,7 +50,6 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   name_prefix               = "${aws_launch_template.ingestion_ecs_cluster.name}-lt_ver${aws_launch_template.ingestion_ecs_cluster.latest_version}_"
   min_size                  = 0
   max_size                  = var.ingestion_ecs_cluster_asg_max[local.environment]
-  protect_from_scale_in     = true
   health_check_grace_period = 600
   health_check_type         = "EC2"
   force_delete              = true
@@ -61,6 +64,13 @@ resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 25
+    }
   }
 
   dynamic "tag" {
@@ -90,6 +100,9 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
 
   user_data = base64encode(templatefile("userdata.tpl", {
     cluster_name = local.cluster_name # Referencing the cluster resource causes a circular dependency
+    region       = data.aws_region.current.name
+    name         = local.ingestion_ecs_friendly_name
+
   }))
 
   instance_initiated_shutdown_behavior = "terminate"
@@ -102,9 +115,8 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size           = 1024
-      volume_type           = "io1"
-      iops                  = "2000"
+      volume_size           = local.ingestion_ecs_cluster_ebs_volume_size[local.environment]
+      volume_type           = local.ingestion_ecs_cluster_ebs_volume_type[local.environment]
       delete_on_termination = true
       encrypted             = true
     }
@@ -132,6 +144,17 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
         SSMEnabled          = local.ingestion_ecs_cluster_asg_ssmenabled[local.environment],
         Persistence         = "Ignore",
         propagate_at_launch = true,
+      }
+    )
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      local.common_tags,
+      {
+        Name = local.ingestion_ecs_friendly_name,
       }
     )
   }
@@ -252,6 +275,17 @@ data "aws_iam_policy_document" "ingestion_ecs_cluster" {
       "logs:DescribeLogStreams"
     ]
     resources = [aws_cloudwatch_log_group.ingestion_ecs_cluster.arn]
+  }
+
+  statement {
+    sid    = "EnableEC2TaggingHost"
+    effect = "Allow"
+
+    actions = [
+      "ec2:ModifyInstanceMetadataOptions",
+      "ec2:*Tags",
+    ]
+    resources = ["arn:aws:ec2:${var.region}:${local.account[local.environment]}:instance/*"]
   }
 }
 
