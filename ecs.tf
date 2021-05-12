@@ -49,6 +49,7 @@ resource "aws_ecs_capacity_provider" "ingestion_ecs_cluster" {
 resource "aws_autoscaling_group" "ingestion_ecs_cluster" {
   name_prefix               = "${aws_launch_template.ingestion_ecs_cluster.name}-lt_ver${aws_launch_template.ingestion_ecs_cluster.latest_version}_"
   min_size                  = 0
+  desired_capacity          = var.ingestion_ecs_cluster_asg_max[local.environment]
   max_size                  = var.ingestion_ecs_cluster_asg_max[local.environment]
   health_check_grace_period = 600
   health_check_type         = "EC2"
