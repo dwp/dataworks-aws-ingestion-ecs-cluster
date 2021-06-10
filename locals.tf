@@ -26,10 +26,10 @@ locals {
   ingestion_ecs_asg_tags = merge(
     local.common_tags,
     {
-      Name                = local.ingestion_ecs_friendly_name,
-      AutoShutdown        = local.ingestion_ecs_cluster_asg_autoshutdown[local.environment],
-      SSMEnabled          = local.ingestion_ecs_cluster_asg_ssmenabled[local.environment],
-      Persistence         = "Ignore",
+      Name         = local.ingestion_ecs_friendly_name,
+      AutoShutdown = local.ingestion_ecs_cluster_asg_autoshutdown[local.environment],
+      SSMEnabled   = local.ingestion_ecs_cluster_asg_ssmenabled[local.environment],
+      Persistence  = "Ignore",
     }
   )
 

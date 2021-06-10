@@ -20,10 +20,10 @@ resource "aws_security_group" "ingestion_ecs_cluster" {
   vpc_id                 = data.terraform_remote_state.ingestion.outputs.vpc.vpc.vpc.id
 
   tags = merge(
-  local.common_tags,
-  {
-    Name = local.ingestion_ecs_friendly_name
-  }
+    local.common_tags,
+    {
+      Name = local.ingestion_ecs_friendly_name
+    }
   )
 }
 
