@@ -9,3 +9,6 @@ groups:
   - name: pull-request
     jobs:
       - dataworks-aws-ingestion-ecs-cluster-pr
+  - name: update-pipeline
+    jobs:
+      - update-pipeline
