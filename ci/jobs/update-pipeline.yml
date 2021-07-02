@@ -25,5 +25,5 @@ jobs:
             - name: dataworks-aws-ingestion-ecs-cluster
           outputs:
             - name: pipeline
-      - set_pipeline: dataworks-aws-ingestion-ecs-cluster
+      - set_pipeline: ingestion-ecs-cluster
         file: pipeline/aviator_pipeline.yml
