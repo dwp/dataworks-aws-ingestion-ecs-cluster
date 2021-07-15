@@ -9,6 +9,12 @@ variable "region" {
   default = "eu-west-2"
 }
 
+
+variable "cluster_name" {
+  type    = string
+  default = "ingestion"
+}
+
 variable "ingestion_ecs_cluster_asg_max" {
   description = "Max ingestion asg size"
   default = {
@@ -33,4 +39,10 @@ variable "ingestion_ecs_cluster_ec2_size" {
 variable "ecs_hardened_ami_id" {
   description = "The AMI ID of the latest/pinned ECS Hardened AMI Image"
   type        = string
+}
+
+variable "test_ami" {
+  description = "Defines if cluster should test untested ECS AMI"
+  type        = bool
+  default     = false
 }
