@@ -9,12 +9,6 @@ variable "region" {
   default = "eu-west-2"
 }
 
-
-variable "cluster_name" {
-  type    = string
-  default = "ingestion"
-}
-
 variable "ingestion_ecs_cluster_asg_max" {
   description = "Max ingestion asg size"
   default = {
