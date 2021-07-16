@@ -275,10 +275,7 @@ data "aws_iam_policy_document" "ingestion_ecs_cluster" {
       "logs:PutLogEvents",
       "logs:DescribeLogStreams"
     ]
-    resources = [
-      aws_cloudwatch_log_group.ingestion_ecs_cluster.arn,
-      data.terraform_remote_state.common.outputs.ami_ecs_test_services ? data.terraform_remote_state.common.outputs.ami_ecs_test_log_group_arn : ""
-    ]
+    resources = data.terraform_remote_state.common.outputs.ami_ecs_test_services ? [aws_cloudwatch_log_group.ingestion_ecs_cluster.arn, data.terraform_remote_state.common.outputs.ami_ecs_test_log_group_arn] : aws_cloudwatch_log_group.ingestion_ecs_cluster.arn
   }
 
   statement {
