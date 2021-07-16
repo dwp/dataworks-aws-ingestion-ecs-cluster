@@ -34,3 +34,9 @@ variable "ecs_hardened_ami_id" {
   description = "The AMI ID of the latest/pinned ECS Hardened AMI Image"
   type        = string
 }
+
+variable "test_ami" {
+  description = "Defines if cluster should test untested ECS AMI"
+  type        = bool
+  default     = false
+}

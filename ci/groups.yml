@@ -9,6 +9,11 @@ groups:
   - name: pull-request
     jobs:
       - dataworks-aws-ingestion-ecs-cluster-pr
+
+  - name: ami-test
+    jobs:
+      - apply-and-test-with-ami
+
   - name: update-pipeline
     jobs:
       - update-pipeline
