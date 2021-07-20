@@ -167,6 +167,7 @@ meta:
           - name: meta
           - name: dw-al2-ecs-ami
           - name: previous_success
+
     terminate-ecs-instances:
       task: terminate-ecs-instances
       config:
