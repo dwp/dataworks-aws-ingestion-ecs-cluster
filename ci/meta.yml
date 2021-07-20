@@ -29,6 +29,9 @@ meta:
           args:
             - -exc
             - |
+              if [ -f ../previous_success/exit-if-succeeded.sh ]; then
+                source ../previous_success/exit-if-succeeded.sh
+              fi
               python bootstrap_terraform.py
               cp terraform.tf ../terraform-bootstrap
           dir: dataworks-aws-ingestion-ecs-cluster
@@ -48,6 +51,9 @@ meta:
           args:
             - -exc
             - |
+              if [ -f ../previous_success/exit-if-succeeded.sh ]; then
+                source ../previous_success/exit-if-succeeded.sh
+              fi
               export TF_VAR_ecs_hardened_ami_id=$(cat ../dw-al2-ecs-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
               terraform workspace show
@@ -69,6 +75,9 @@ meta:
           args:
             - -exc
             - |
+              if [ -f ../previous_success/exit-if-succeeded.sh ]; then
+                source ../previous_success/exit-if-succeeded.sh
+              fi
               export TF_VAR_ecs_hardened_ami_id=$(cat ../dw-al2-ecs-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
               terraform workspace show
@@ -97,6 +106,7 @@ meta:
           args:
             - -exc
             - |
+              source ./previous_success/exit-if-succeeded.sh
               export AWS_DEFAULT_REGION
               source /assume-role
               set -x
@@ -114,6 +124,8 @@ meta:
                 let "max_retries-=1"
               done
               exit 1
+        inputs:
+          - name: previous_success
       params:
         AWS_DEFAULT_REGION: ((dataworks.aws_region))
         AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
@@ -138,6 +150,7 @@ meta:
           args:
             - -exc
             - |
+              source ./previous_success/exit-if-succeeded.sh
               set +x
               AMI_ID=$(cat dw-al2-ecs-ami/id)
               DATE=$(date -u)
@@ -153,7 +166,7 @@ meta:
         inputs:
           - name: meta
           - name: dw-al2-ecs-ami
-
+          - name: previous_success
     terminate-ecs-instances:
       task: terminate-ecs-instances
       config:
@@ -169,6 +182,7 @@ meta:
           args:
             - -exc
             - |
+              source ./previous_success/exit-if-succeeded.sh
               export AWS_DEFAULT_REGION
               ami_id=$(cat dw-al2-ecs-ami/id)
               source /assume-role
@@ -215,9 +229,56 @@ meta:
               exit 1
         inputs:
           - name: dw-al2-ecs-ami
+          - name: previous_success
       params:
         AWS_DEFAULT_REGION: ((dataworks.aws_region))
         AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
         ASG_NAME: ingestion-ecs-cluster
         SLEEP_TIME: 60
         MAX_RETRIES: 15
+    check-ami-test-results:
+      task: check-ami-test-result
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.terraform_repository))
+            tag: ((dataworks.terraform_13_version))
+        params:
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          GIT_USERNAME: ((dataworks.concourse_github_username))
+          GIT_EMAIL: ((dataworks.concourse_github_email))
+          GITHUB_TOKEN: ((dataworks-secrets.concourse_github_pat))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              set +x
+              PREVIOUS_SUCCESS=false
+              AMI_ID=$(cat untested_ami/id)
+              DATE=$(date -u)
+              PIPELINE="$(cat meta/build_pipeline_name)"
+              PATH_TO_RESULTS="ami-builder-configs/results"
+              git config --global user.name "${GIT_USERNAME}"
+              git config --global user.email "${GIT_EMAIL}"
+              git clone https://${GITHUB_TOKEN}:x-oauth-basic@github.com/dwp/ami-builder-configs
+              if [ -f "./$PATH_TO_RESULTS/$PIPELINE.test" ]; then
+                set +e
+                grep "$AMI_ID SUCCESS" "./$PATH_TO_RESULTS/$PIPELINE.test"
+                if [ $? -eq 0 ]; then
+                  PREVIOUS_SUCCESS=true
+                fi
+                set -e
+              fi
+              touch ./previous_success/exit-if-succeeded.sh
+              if $PREVIOUS_SUCCESS; then
+                 echo 'echo "AMI already passed. Exiting..."; exit 0' > ./previous_success/exit-if-succeeded.sh
+              fi
+              chmod +x ./previous_success/exit-if-succeeded.sh
+        outputs:
+          - name: previous_success
+        inputs:
+          - name: meta
+          - name: untested_ami
