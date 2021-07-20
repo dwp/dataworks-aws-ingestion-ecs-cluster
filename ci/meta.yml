@@ -237,6 +237,7 @@ meta:
         ASG_NAME: ingestion-ecs-cluster
         SLEEP_TIME: 60
         MAX_RETRIES: 15
+
     check-ami-test-results:
       task: check-ami-test-result
       config:
