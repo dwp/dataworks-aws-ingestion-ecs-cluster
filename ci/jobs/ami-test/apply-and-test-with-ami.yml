@@ -34,6 +34,8 @@ jobs:
           params:
             TF_WORKSPACE: qa
             TEST_AMI_RUN: true
+          inputs:
+            - name: previous_success
       - .: (( inject meta.plan.terminate-ecs-instances ))
       - .: (( inject meta.plan.test-ecs-ami ))
 
