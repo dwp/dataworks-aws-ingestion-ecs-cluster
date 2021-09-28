@@ -20,3 +20,7 @@ In addition, you may want to do the following:
     1. Add/remove jobs in `./ci/jobs` as required 
     1. Create CI pipeline:  
 `aviator`
+       
+## Infrastructure
+This repo builds an AWS ECS cluster named `ingestion` onto which the `claimant-api-kafka-consumer` application is deployed.
+The ECS task and service is defined separately in the [Dataworks AWS UCFS Claimant Consumer](https://github.com/dwp/dataworks-aws-ucfs-claimant-consumer) repo.
