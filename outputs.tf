@@ -8,10 +8,10 @@ output "ingestion_ecs_cluster" {
 
 output "ingestion_ecs_cluster_autoscaling_group" {
   value = {
-    id   = aws_autoscaling_group.ingestion_ecs_cluster.id
-    arn  = aws_autoscaling_group.ingestion_ecs_cluster.arn
-    name = aws_autoscaling_group.ingestion_ecs_cluster.name
-    max_size = aws_autoscaling_group.ingestion_ecs_cluster.max_size
+    id          = aws_autoscaling_group.ingestion_ecs_cluster.id
+    arn         = aws_autoscaling_group.ingestion_ecs_cluster.arn
+    name        = aws_autoscaling_group.ingestion_ecs_cluster.name
+    max_size    = aws_autoscaling_group.ingestion_ecs_cluster.max_size
     name_prefix = aws_autoscaling_group.ingestion_ecs_cluster.name_prefix
   }
 }
