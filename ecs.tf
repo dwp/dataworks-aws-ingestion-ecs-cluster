@@ -100,9 +100,25 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
   }
 
   user_data = base64encode(templatefile("userdata.tpl", {
-    cluster_name = local.cluster_name # Referencing the cluster resource causes a circular dependency
-    region       = data.aws_region.current.name
-    name         = local.ingestion_ecs_friendly_name
+    cluster_name                                     = local.cluster_name # Referencing the cluster resource causes a circular dependency
+    region                                           = data.aws_region.current.name
+    name                                             = local.ingestion_ecs_friendly_name
+    proxy_port                                       = var.proxy_port
+    proxy_host                                       = data.terraform_remote_state.ingestion.outputs.internet_proxy.host
+    hcs_environment                                  = local.hcs_environment[local.environment]
+    s3_scripts_bucket                                = data.terraform_remote_state.common.outputs.config_bucket.id
+    s3_script_logrotate                              = aws_s3_object.ingestion_logrotate_script.id
+    s3_script_cloudwatch_shell                       = aws_s3_object.ingestion_cloudwatch_script.id
+    s3_script_logging_shell                          = aws_s3_object.ingestion_logging_script.id
+    s3_script_config_hcs_shell                       = aws_s3_object.ingestion_config_hcs_script.id
+    cwa_namespace                                    = local.cw_agent_namespace_ingestion_ecs
+    cwa_log_group_name                               = "${local.cw_agent_namespace_ingestion_ecs}-${local.environment}"
+    cwa_metrics_collection_interval                  = local.cw_agent_metrics_collection_interval
+    cwa_cpu_metrics_collection_interval              = local.cw_agent_cpu_metrics_collection_interval
+    cwa_disk_measurement_metrics_collection_interval = local.cw_agent_disk_measurement_metrics_collection_interval
+    cwa_disk_io_metrics_collection_interval          = local.cw_agent_disk_io_metrics_collection_interval
+    cwa_mem_metrics_collection_interval              = local.cw_agent_mem_metrics_collection_interval
+    cwa_netstat_metrics_collection_interval          = local.cw_agent_netstat_metrics_collection_interval
 
   }))
 

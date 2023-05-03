@@ -4,8 +4,14 @@ locals {
 
   iam_role_max_session_timeout_seconds = 43200
 
-  cw_agent_namespace_ingestion_ecs      = "/app/${local.ingestion_ecs_friendly_name}"
-  cw_agent_log_group_name_ingestion_ecs = "/app/${local.ingestion_ecs_friendly_name}"
+  cw_agent_namespace_ingestion_ecs                      = "/app/${local.ingestion_ecs_friendly_name}"
+  cw_agent_log_group_name_ingestion_ecs                 = "/app/${local.ingestion_ecs_friendly_name}"
+  cw_agent_metrics_collection_interval                  = 60
+  cw_agent_cpu_metrics_collection_interval              = 60
+  cw_agent_disk_measurement_metrics_collection_interval = 60
+  cw_agent_disk_io_metrics_collection_interval          = 60
+  cw_agent_mem_metrics_collection_interval              = 60
+  cw_agent_netstat_metrics_collection_interval          = 60
 
   ingestion_ecs_cluster_asg_autoshutdown = {
     development = "False"
