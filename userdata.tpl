@@ -37,7 +37,10 @@ chmod u+x /opt/ingestion/cloudwatch.sh
 
 echo "Setup hcs pre-requisites"
 chmod u+x /opt/ingestion/config_hcs.sh
-/opt/ingestion/config_hcs.sh "${hcs_environment}" "${proxy_host}" "${proxy_port}"
+/opt/ingestion/config_hcs.sh "${hcs_environment}" "${proxy_host}" "${proxy_port}" \
+    "${tanium_server_1}" "${tanium_server_2}" "${tanium_env}" "${tanium_port}" \
+    "${tanium_log_level}" "${install_tenable}" "${install_trend}" "${install_tanium}" \
+    "${tenantid}" "${token}" "${policyid}" "${tenant}"
 
 echo "Creating ingestion user"
 useradd ingestion -m
