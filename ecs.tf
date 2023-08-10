@@ -122,7 +122,7 @@ resource "aws_launch_template" "ingestion_ecs_cluster" {
     install_tenable                                  = local.tenable_install[local.environment]
     install_trend                                    = local.trend_install[local.environment]
     install_tanium                                   = local.tanium_install[local.environment]
-    tanium_server_1                                  = local.tanium1
+    tanium_server_1                                  = data.terraform_remote_state.ingestion.outputs.tanium_service_endpoint.dns
     tanium_server_2                                  = local.tanium2
     tanium_env                                       = local.tanium_env[local.environment]
     tanium_port                                      = var.tanium_port_1
